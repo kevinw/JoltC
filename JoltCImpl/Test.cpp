@@ -77,8 +77,11 @@ constexpr auto to_integral(E e) -> typename std::underlying_type<E>::type
 #define ENSURE_NORMAL_FIELD(basetype, basefield) \
 	ENSURE_FIELD(JPC_ ## basetype, basefield, JPH::basetype, m ## basefield);
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wkeyword-macro" // Tell Clang we know what we're doing in redefining 'const' here.
 #define const constexpr // 🫡
 #include "JoltC/Enums.h"
 #undef const
+#pragma clang diagnostic pop
 
 #include "JoltC/Functions.h"

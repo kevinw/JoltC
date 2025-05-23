@@ -39,6 +39,9 @@
 
 #define JPC_IMPL static
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-function" // The OPAQUE_WRAPPER macro below defines some functions which go unused.
+
 #define OPAQUE_WRAPPER(c_type, cpp_type) \
 	static c_type* to_jpc(cpp_type *in) { return reinterpret_cast<c_type*>(in); } \
 	static const c_type* to_jpc(const cpp_type *in) { return reinterpret_cast<const c_type*>(in); } \
@@ -240,7 +243,7 @@ static JPC_SubShapeID to_jpc(JPH::SubShapeID in) {
 }
 
 static JPC_RayCastResult to_jpc(JPH::RayCastResult in) {
-	JPC_RayCastResult out{0};
+	JPC_RayCastResult out{};
 	out.BodyID = to_jpc(in.mBodyID);
 	out.Fraction = in.mFraction;
 	out.SubShapeID2 = to_jpc(in.mSubShapeID2);
@@ -401,7 +404,7 @@ JPC_IMPL JPH::CollisionGroup JPC_CollisionGroup_to_jph(const JPC_CollisionGroup*
 
 JPC_IMPL JPC_CollisionGroup JPC_CollisionGroup_to_jpc(const JPH::CollisionGroup* input) {
 	JPC_CollisionGroup group{};
-	group.GroupFilter; // NOTE: This member doesn't matter for callers of this function
+	(void)group.GroupFilter; // NOTE: This member doesn't matter for callers of this function
 	group.GroupID = input->GetGroupID();
 	group.SubGroupID = input->GetSubGroupID();
 	return group;
@@ -1596,9 +1599,9 @@ JPC_API void JPC_TriangleShapeSettings_default(JPC_TriangleShapeSettings* object
 	// TODO: Material
 	object->Density = 1000.0;
 
-	object->V1 = {0};
-	object->V2 = {0};
-	object->V3 = {0};
+	object->V1 = {};
+	object->V2 = {};
+	object->V3 = {};
 	object->ConvexRadius = 0.0;
 }
 
@@ -1679,7 +1682,7 @@ JPC_API void JPC_BoxShapeSettings_default(JPC_BoxShapeSettings* object) {
 	// TODO: Material
 	object->Density = 1000.0;
 
-	object->HalfExtent = JPC_Vec3{0};
+	object->HalfExtent = JPC_Vec3{};
 	object->ConvexRadius = 0.0;
 }
 
@@ -1843,8 +1846,8 @@ static JPH::Array<JPH::CompoundShapeSettings::SubShapeSettings> to_jph(const JPC
 
 JPC_API void JPC_SubShapeSettings_default(JPC_SubShapeSettings* object) {
 	object->Shape = nullptr;
-	object->Position = JPC_Vec3{0};
-	object->Rotation = JPC_Quat{0, 0, 0, 1};
+	object->Position = JPC_Vec3{};
+	object->Rotation = JPC_Quat{};
 	object->UserData = 0;
 }
 
@@ -2755,8 +2758,8 @@ JPC_API bool JPC_NarrowPhaseQuery_CastRay(const JPC_NarrowPhaseQuery* self, JPC_
 }
 
 JPC_API void JPC_ShapeCastSettings_default(JPC_ShapeCastSettings* object) {
-	JPH::ShapeCastSettings default{};
-	*object = to_jpc(default);
+	JPH::ShapeCastSettings defaultValue{};
+	*object = to_jpc(defaultValue);
 }
 
 JPC_API void JPC_NarrowPhaseQuery_CastShape(const JPC_NarrowPhaseQuery* self, JPC_NarrowPhaseQuery_CastShapeArgs* args) {
@@ -2804,8 +2807,8 @@ JPC_API void JPC_NarrowPhaseQuery_CastShape(const JPC_NarrowPhaseQuery* self, JP
 }
 
 JPC_API void JPC_CollideShapeSettings_default(JPC_CollideShapeSettings* object) {
-	JPH::CollideShapeSettings default{};
-	*object = to_jpc(default);
+	JPH::CollideShapeSettings defaultValue{};
+	*object = to_jpc(defaultValue);
 }
 
 JPC_API void JPC_NarrowPhaseQuery_CollideShape(const JPC_NarrowPhaseQuery* self, JPC_NarrowPhaseQuery_CollideShapeArgs* args) {
@@ -2948,3 +2951,5 @@ JPC_API void JPC_PhysicsSystem_SetSimShapeFilter(
 {
 	to_jph(self)->SetSimShapeFilter(to_jph(inShapeFilter));
 }
+
+#pragma clang diagnostic pop
